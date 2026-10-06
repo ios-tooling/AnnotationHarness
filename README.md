@@ -18,7 +18,7 @@ WindowGroup {
 }
 ```
 
-Launch a debug build on an iPad with the `-AnnotationHarness` argument (Xcode: Scheme › Run › Arguments; simulator: `xcrun simctl launch <udid> <bundle-id> -AnnotationHarness`). Without the argument, on an iPhone or in a release build, the app runs untouched. Everything in the package compiles to a no-op outside `DEBUG`, so the `#if DEBUG` at the call site is a second guard, not the only one.
+Launch a debug build on an iPad with the `-AnnotationHarness` argument (Xcode: Scheme › Run › Arguments; simulator: `xcrun simctl launch <udid> <bundle-id> -AnnotationHarness`). Without the argument, on an iPhone or in a release build, the app runs untouched; a debug build on an iPad without it prints a one-line note to the console saying how to turn it on. Adding the argument to the app's shared scheme, ticked, makes every Xcode run on an iPad use the harness. Everything in the package compiles to a no-op outside `DEBUG`, so the `#if DEBUG` at the call site is a second guard, not the only one.
 
 Optionally name screens so captures are labelled: `.annotationScreen("Reviews")`. The deepest named view on screen wins, and you can edit the name before saving.
 

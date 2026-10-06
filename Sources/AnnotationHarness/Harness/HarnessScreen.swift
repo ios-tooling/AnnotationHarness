@@ -8,9 +8,22 @@
 		@State private var isActive = AnnotationHarnessModifier.activate()
 
 		private static func activate() -> Bool {
-			guard AnnotationHarness.isRequested(), Gestalt.deviceIdiom == .pad else { return false }
+			guard Gestalt.deviceIdiom == .pad else { return false }
+			guard AnnotationHarness.isRequested() else {
+				logHowToTurnOn()
+				return false
+			}
 			Gestalt.idiomOverride = .phone
 			return true
+		}
+
+		private static var hasLoggedHint = false
+
+		/// `print`, not `Logger`: schemes often set `OS_ACTIVITY_MODE=disable`, which hides unified logging in Xcode's console.
+		private static func logHowToTurnOn() {
+			guard !hasLoggedHint else { return }
+			hasLoggedHint = true
+			print("AnnotationHarness is available: launch with \(AnnotationHarness.launchArgument) to run this app at iPhone size with screenshot markup and a shareable report. In Xcode, tick it under Product › Scheme › Edit Scheme › Run › Arguments; from the command line, pass it after the bundle ID: xcrun devicectl device process launch --device <device> <bundle-id> -- \(AnnotationHarness.launchArgument)")
 		}
 
 		func body(content: Content) -> some View {
