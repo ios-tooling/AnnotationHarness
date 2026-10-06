@@ -35,7 +35,10 @@
 				if count > 0, count != NSNotFound {
 					return (0..<count).compactMap { object.accessibilityElement(at: $0) as? NSObject }
 				}
-				return (object as? UIView)?.subviews ?? []
+				guard let view = object as? UIView else { return [] }
+				// VoiceOver's rule: a modal view (a presented sheet's container, say) hides its siblings, so the screen behind a sheet isn't listed.
+				if let modal = view.subviews.last(where: { $0.accessibilityViewIsModal && !$0.isHidden }) { return [modal] }
+				return view.subviews
 			}
 
 			func node(for object: NSObject, depth: Int) -> AccessibilityNode? {
