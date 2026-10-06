@@ -12,8 +12,7 @@ let package = Package(
 		.library(name: "AnnotationHarness", targets: ["AnnotationHarness"]),
 	],
 	dependencies: [
-		// Gestalt.idiomOverride needs the Suite release after 1.4.22; bump this once it's tagged.
-		.package(url: "https://github.com/ios-tooling/Suite", from: "1.4.22"),
+		.package(url: "https://github.com/ios-tooling/Suite", from: "1.4.23"),
 	],
 	targets: [
 		.target(name: "AnnotationHarness", dependencies: [.product(name: "Suite", package: "Suite")]),
