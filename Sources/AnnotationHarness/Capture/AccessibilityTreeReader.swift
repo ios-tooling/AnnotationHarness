@@ -26,6 +26,13 @@
 					nodes.append(group)
 					childDepth += 1
 				}
+				// VoiceOver's rule: a modal view (a presented sheet's container, say) hides its siblings, so the screen
+				// behind a sheet isn't listed. A modal view with nothing readable in it hides nothing: walk everything.
+				if let view = object as? UIView, let modal = view.subviews.last(where: { $0.accessibilityViewIsModal && !$0.isHidden && $0.alpha > 0 }) {
+					let before = nodes.count
+					visit(modal, depth: childDepth)
+					if nodes.count > before { return }
+				}
 				for child in children(of: object) { visit(child, depth: childDepth) }
 			}
 
@@ -35,10 +42,7 @@
 				if count > 0, count != NSNotFound {
 					return (0..<count).compactMap { object.accessibilityElement(at: $0) as? NSObject }
 				}
-				guard let view = object as? UIView else { return [] }
-				// VoiceOver's rule: a modal view (a presented sheet's container, say) hides its siblings, so the screen behind a sheet isn't listed.
-				if let modal = view.subviews.last(where: { $0.accessibilityViewIsModal && !$0.isHidden }) { return [modal] }
-				return view.subviews
+				return (object as? UIView)?.subviews ?? []
 			}
 
 			func node(for object: NSObject, depth: Int) -> AccessibilityNode? {
