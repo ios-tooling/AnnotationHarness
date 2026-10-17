@@ -1,4 +1,5 @@
 #if DEBUG && os(iOS)
+	import AnnotationCore
 	import SwiftUI
 
 	/// The harness's tools: capture, device choice, the session's captures and its export.

@@ -15,7 +15,12 @@ let package = Package(
 		.package(url: "https://github.com/ios-tooling/Suite", from: "1.4.23"),
 	],
 	targets: [
-		.target(name: "AnnotationHarness", dependencies: [.product(name: "Suite", package: "Suite")]),
-		.testTarget(name: "AnnotationHarnessTests", dependencies: ["AnnotationHarness"]),
+		// Model, report, wire format and transport; not DEBUG-gated, so the companion app can ship them.
+		.target(name: "AnnotationCore"),
+		// The Pencil markup screen and share sheet (iOS only); not DEBUG-gated either.
+		.target(name: "AnnotationUI", dependencies: ["AnnotationCore"]),
+		// The in-app harness host apps link; everything in it stays inside `#if DEBUG`.
+		.target(name: "AnnotationHarness", dependencies: ["AnnotationCore", "AnnotationUI", .product(name: "Suite", package: "Suite")]),
+		.testTarget(name: "AnnotationHarnessTests", dependencies: ["AnnotationCore", "AnnotationHarness"]),
 	]
 )

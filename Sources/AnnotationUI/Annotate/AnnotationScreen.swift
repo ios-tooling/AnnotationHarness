@@ -1,11 +1,14 @@
-#if DEBUG && os(iOS)
+#if os(iOS)
+	import AnnotationCore
 	import PencilKit
 	import SwiftUI
 
 	/// Marks up a fresh capture with the Pencil and adds a note, then saves both into the session.
-	struct AnnotationScreen: View {
+	package struct AnnotationScreen: View {
 		let draft: CaptureDraft
 		let session: HarnessSession
+		/// Called after the capture is saved into the session, before the screen dismisses.
+		let onSave: (@MainActor () -> Void)?
 		@Environment(\.dismiss) private var dismiss
 		@State private var drawing = PKDrawing()
 		@State private var canvasSize: CGSize = .zero
@@ -13,13 +16,14 @@
 		@State private var screenName: String
 		@State private var saveError: String?
 
-		init(draft: CaptureDraft, session: HarnessSession) {
+		package init(draft: CaptureDraft, session: HarnessSession, onSave: (@MainActor () -> Void)? = nil) {
 			self.draft = draft
 			self.session = session
+			self.onSave = onSave
 			_screenName = State(initialValue: draft.screenName ?? "")
 		}
 
-		var body: some View {
+		package var body: some View {
 			NavigationStack {
 				AnnotationCanvasView(image: draft.image, drawing: $drawing, canvasSize: $canvasSize)
 					.inspector(isPresented: .constant(true)) {
@@ -59,7 +63,8 @@
 			}
 			do {
 				let name = screenName.trimmingCharacters(in: .whitespacesAndNewlines)
-				try session.add(original: original, annotated: marked, note: note, screenName: name.isEmpty ? nil : name, accessibility: draft.accessibility)
+				try session.add(original: original, annotated: marked, note: note, screenName: name.isEmpty ? nil : name, accessibility: draft.accessibility, layout: draft.layout)
+				onSave?()
 				dismiss()
 			} catch {
 				saveError = error.localizedDescription
@@ -78,6 +83,8 @@
 				.resizable()
 				.scaledToFit()
 				.frame(maxWidth: image.size.width, maxHeight: image.size.height)
+				// Keeps the frame tight to the image when it has to shrink, so the canvas covers the image and nothing else.
+				.aspectRatio(image.size, contentMode: .fit)
 				.overlay {
 					PencilCanvas(drawing: $drawing)
 						.onGeometryChange(for: CGSize.self) { $0.size } action: { canvasSize = $0 }

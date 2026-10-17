@@ -1,4 +1,5 @@
 #if DEBUG && os(iOS)
+	import AnnotationCore
 	import SwiftUI
 	import UIKit
 

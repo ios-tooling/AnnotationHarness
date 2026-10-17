@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import AnnotationHarness
+@testable import AnnotationCore
 
 struct ReportWriterTests {
 	let capture = Capture(number: 1, date: .now, screenName: "Reviews", note: "Rating stars overlap the title", accessibility: [
@@ -26,17 +26,11 @@ struct ReportWriterTests {
 
 	@Test("The header names the layout, so an agent knows it was an iPhone screen shown on an iPad")
 	func headerNamesLayout() {
-		var manifest = SessionManifest.new(deviceID: "iphone-16e")
+		var manifest = SessionManifest.new(source: .reviews, layout: .harness(deviceID: "iphone-16e"))
 		manifest.captures = [capture]
 		let report = ReportWriter.markdown(for: manifest)
 		#expect(report.contains("iPhone 16e, 390×844 pt"))
 		#expect(report.contains("- Captures: 1"))
-	}
-
-	@Test("Only the launch argument turns the harness on")
-	func launchArgument() {
-		#expect(AnnotationHarness.isRequested(arguments: ["App", "-AnnotationHarness"]))
-		#expect(!AnnotationHarness.isRequested(arguments: ["App"]))
 	}
 
 	@Test("The screen shows at real size when it fits and shrinks only when it must")

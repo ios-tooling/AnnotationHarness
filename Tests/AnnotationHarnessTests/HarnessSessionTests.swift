@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import AnnotationHarness
+@testable import AnnotationCore
 
 @MainActor struct HarnessSessionTests {
 	let root = URL.temporaryDirectory.appending(path: "AnnotationHarnessTests-\(UUID().uuidString)", directoryHint: .isDirectory)

@@ -1,4 +1,5 @@
 #if DEBUG && os(iOS)
+	import AnnotationCore
 	import SwiftUI
 
 	/// A stand-in iPhone status bar drawn over the top of the phone window: the time on the left,

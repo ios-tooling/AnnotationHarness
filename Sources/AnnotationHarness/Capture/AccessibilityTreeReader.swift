@@ -1,4 +1,5 @@
 #if DEBUG && os(iOS)
+	import AnnotationCore
 	import UIKit
 
 	/// Walks the window's accessibility tree, the same one VoiceOver and UI tests see,

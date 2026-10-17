@@ -1,4 +1,5 @@
 #if DEBUG && os(iOS)
+	import AnnotationCore
 	import SwiftUI
 	import UIKit
 
@@ -14,6 +15,7 @@
 
 		func update(root: Root, device: DeviceProfile, frame: CGRect, scale: CGFloat, isHidden: Bool, stage: StageGeometry) {
 			self.stage = stage
+			stage.deviceID = device.id
 			self.device = device
 			frameInWindow = frame
 			self.scale = scale
@@ -61,6 +63,7 @@
 			phoneWindow = phone
 			stage?.window = phone
 			stage?.hostWindow = window
+			StageGeometry.current = stage
 			return phone
 		}
 

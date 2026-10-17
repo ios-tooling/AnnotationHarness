@@ -1,12 +1,13 @@
-#if DEBUG && os(iOS)
+#if os(iOS)
+	import AnnotationCore
 	import UIKit
 
 	/// Presents the share sheet for a session's zip.
 	///
 	/// UIKit rather than `ShareLink`: the harness has to hide the phone window while the sheet is up
 	/// (the phone window sits above it), and `ShareLink` gives no word of when its sheet opens or closes.
-	@MainActor enum ReportSharer {
-		static func share(_ archive: ReportArchive, from rect: CGRect, in window: UIWindow, onDismiss: @escaping @MainActor () -> Void) {
+	@MainActor package enum ReportSharer {
+		package static func share(_ archive: ReportArchive, from rect: CGRect, in window: UIWindow, onDismiss: @escaping @MainActor () -> Void) {
 			guard let zip = try? archive.makeZip() else {
 				onDismiss()
 				return

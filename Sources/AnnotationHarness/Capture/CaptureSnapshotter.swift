@@ -1,14 +1,7 @@
 #if DEBUG && os(iOS)
+	import AnnotationUI
 	import SwiftUI
 	import UIKit
-
-	/// A screenshot waiting to be marked up.
-	struct CaptureDraft: Identifiable {
-		let id = UUID()
-		let image: UIImage
-		let accessibility: [AccessibilityNode]
-		let screenName: String?
-	}
 
 	/// Captures the phone window.
 	///

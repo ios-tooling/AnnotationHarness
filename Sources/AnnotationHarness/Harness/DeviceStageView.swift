@@ -1,4 +1,5 @@
 #if DEBUG && os(iOS)
+	import AnnotationCore
 	import SwiftUI
 
 	/// Reserves room for the device on the stage and places the phone window over it,

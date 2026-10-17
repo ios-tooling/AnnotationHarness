@@ -1,4 +1,6 @@
 #if DEBUG && os(iOS)
+	import AnnotationCore
+	import AnnotationUI
 	import Suite
 	import SwiftUI
 
@@ -81,8 +83,12 @@
 
 	/// The phone window, the app's own window beneath it and the screen being shown, kept up to date by the stage.
 	@MainActor final class StageGeometry {
+		/// The stage of the harness running in this app, if any; the sender sends its phone window.
+		static weak var current: StageGeometry?
 		weak var window: UIWindow?
 		weak var hostWindow: UIWindow?
 		var screenName: String?
+		/// The `DeviceProfile` the phone window imitates.
+		var deviceID: String?
 	}
 #endif
