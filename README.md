@@ -41,6 +41,43 @@ Optionally name screens so captures are labelled: `.annotationScreen("Reviews")`
 
 Accessibility frames are in points from the top-left of the iPhone screen, so they line up with the original PNG at its point size.
 
+## Sending to the companion
+
+A Mac, iPhone or iPad app can also send its current window to an iPad running **AnnotationHarness Companion**, which collects the captures per app for markup and reporting there.
+
+- `.annotationSender()` on the root view shows the companion picker and a brief status ("Sent to Desk iPad", "No AnnotationHarness Companion found", or the error), and labels captures with `.annotationScreen(_:)` names.
+- `AnnotationHarness.sendCurrentWindow()` captures the current window (on a Mac, the key window with its title bar and toolbar) and its accessibility elements, then sends it. Call it from your own menu command, button or hotkey.
+
+Companions are found over Bonjour. One is used straight away; with several you're asked once, and that choice holds for the rest of the run. Both are no-ops outside `DEBUG`.
+
+```swift
+WindowGroup {
+	RootScreen()
+		#if DEBUG
+			.annotationSender()
+		#endif
+}
+.commands {
+	#if DEBUG
+		CommandMenu("Debug") {
+			Button("Send Window to Companion") { AnnotationHarness.sendCurrentWindow() }
+				.keyboardShortcut("s", modifiers: [.command, .control])
+		}
+	#endif
+}
+```
+
+With the iPad harness, apply `.annotationSender()` before `.annotationHarness()` so the picker and status show inside the phone window, which sits above the app's own; the phone window is what's sent.
+
+The host's Info.plist (a debug-only xcconfig or Info.plist is a good place) needs:
+
+- `NSLocalNetworkUsageDescription`: why the app uses the local network, e.g. "Sends screenshots to AnnotationHarness Companion."
+- `NSBonjourServices`: `_annotharness._tcp`
+- iOS only, `LSApplicationQueriesSchemes`: `annotationharness`
+- A sandboxed Mac app also needs the `com.apple.security.network.client` entitlement.
+
+**Same device:** when no companion is on the network and the companion is installed on the same iPhone or iPad, the capture goes through the clipboard instead: it's put on the general pasteboard (replacing whatever you had copied) and the companion is opened to pick it up. This needs the `LSApplicationQueriesSchemes` entry above.
+
 ## Limits
 
 - `UIDevice.current.userInterfaceIdiom` still says `.pad`, and the keyboard is the iPad's. Check the idiom through Suite's `Gestalt.isOnIPhone` / `isOnIPad` instead: the harness sets `Gestalt.idiomOverride = .phone` while it runs (`Gestalt.deviceIdiom` keeps the hardware's). It does so when the root view first appears, so a check made earlier, in the app's `init`, still sees the iPad.

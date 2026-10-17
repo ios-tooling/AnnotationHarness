@@ -4,10 +4,19 @@ import SwiftUI
 /// with a Pencil markup tool for screenshots and a per-session report for a coding agent.
 ///
 /// Apply `.annotationHarness()` to the app's root view and launch with `-AnnotationHarness` on an iPad.
+/// To send windows to an AnnotationHarness Companion instead, apply `.annotationSender()` and call `sendCurrentWindow()`.
 /// In release builds every entry point compiles to a no-op.
 public enum AnnotationHarness {
 	/// The launch argument that turns the harness on.
 	public static let launchArgument = "-AnnotationHarness"
+
+	/// Captures the current window and sends it to an AnnotationHarness Companion, asking which one when several are found.
+	/// Call it from the app's own menu command, button or hotkey; the root view needs `.annotationSender()`.
+	@MainActor public static func sendCurrentWindow() {
+		#if DEBUG
+			AnnotationSender.shared.send()
+		#endif
+	}
 }
 
 public extension View {
@@ -15,6 +24,16 @@ public extension View {
 	func annotationHarness() -> some View {
 		#if DEBUG && os(iOS)
 			modifier(AnnotationHarnessModifier())
+		#else
+			self
+		#endif
+	}
+
+	/// Lets `AnnotationHarness.sendCurrentWindow()` send this view's window: shows the companion picker and the send's status,
+	/// and labels captures with the screen named by `.annotationScreen(_:)`. Apply it to the app's root view.
+	func annotationSender() -> some View {
+		#if DEBUG
+			modifier(AnnotationSenderModifier())
 		#else
 			self
 		#endif
