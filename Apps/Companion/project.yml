@@ -1,0 +1,52 @@
+name: AnnotationHarness Companion
+options:
+  bundleIdPrefix: com.standalone
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+configFiles:
+  Debug: Version.xcconfig
+  Release: Version.xcconfig
+packages:
+  AnnotationHarness:
+    path: ../..
+targets:
+  AnnotationHarness Companion:
+    type: application
+    platform: iOS
+    scheme: {}
+    sources:
+      - App
+    dependencies:
+      - package: AnnotationHarness
+        product: AnnotationCompanion
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: AnnotationHarness Companion
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        NSBonjourServices:
+          - _annotharness._tcp
+        NSLocalNetworkUsageDescription: AnnotationHarness Companion receives screenshots from apps on your Mac and other devices over the local network.
+        CFBundleURLTypes:
+          - CFBundleURLName: com.standalone.AnnotationHarnessCompanion
+            CFBundleURLSchemes:
+              - annotationharness
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.standalone.AnnotationHarnessCompanion
+        PRODUCT_NAME: AnnotationHarness Companion
+        TARGETED_DEVICE_FAMILY: "2"
+        SWIFT_VERSION: "6.0"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
+        GENERATE_INFOPLIST_FILE: NO
