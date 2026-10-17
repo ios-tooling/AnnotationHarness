@@ -87,12 +87,22 @@
 				.aspectRatio(image.size, contentMode: .fit)
 				.overlay {
 					PencilCanvas(drawing: $drawing)
-						.onGeometryChange(for: CGSize.self) { $0.size } action: { canvasSize = $0 }
+						.onGeometryChange(for: CGSize.self) { $0.size } action: { resizeCanvas(to: $0) }
 				}
 				.overlay { Rectangle().strokeBorder(.separator) }
 				.padding()
 				.frame(maxWidth: .infinity, maxHeight: .infinity)
 				.background(.background.secondary)
+		}
+
+		/// The canvas shrinks and grows with the image (when the keyboard shows, say) but PencilKit keeps strokes in canvas points,
+		/// so the markup is scaled with it to stay on the part of the screenshot it was drawn over.
+		private func resizeCanvas(to size: CGSize) {
+			if canvasSize.width > 0, size.width > 0, size.width != canvasSize.width {
+				let scale = size.width / canvasSize.width
+				drawing = drawing.transformed(using: CGAffineTransform(scaleX: scale, y: scale))
+			}
+			canvasSize = size
 		}
 	}
 #endif
