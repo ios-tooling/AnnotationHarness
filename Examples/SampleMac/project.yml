@@ -1,0 +1,45 @@
+name: SampleMac
+options:
+  bundleIdPrefix: com.standalone
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+configFiles:
+  Debug: Version.xcconfig
+  Release: Version.xcconfig
+packages:
+  AnnotationHarness:
+    path: ../..
+targets:
+  SampleMac:
+    type: application
+    platform: macOS
+    scheme: {}
+    sources:
+      - App
+    dependencies:
+      - package: AnnotationHarness
+        product: AnnotationHarness
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: SampleMac
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSBonjourServices:
+          - _annotharness._tcp
+        NSLocalNetworkUsageDescription: Sends screenshots to AnnotationHarness Companion.
+    entitlements:
+      path: App/SampleMac.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.standalone.SampleMac
+        PRODUCT_NAME: SampleMac
+        SWIFT_VERSION: "6.0"
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
+        GENERATE_INFOPLIST_FILE: NO

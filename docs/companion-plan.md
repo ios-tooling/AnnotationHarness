@@ -60,7 +60,9 @@ Changes in the core:
 
 ## Status
 
-Steps 1–4 are done (2026-10-16): built, unit-tested, and the companion has received captures over Bonjour on an iPad simulator. Step 5 is next.
+Steps 1–5 are done (2026-10-16). Sample host apps are in `Examples/`. The same-device path, the picker and the reports were all checked on simulators. Still open:
+- A live Mac → iPad send wasn't run, because the Mac's Local Network prompt for SampleMac was unanswered. The bytes SampleMac produced were relayed to the companion and worked.
+- Fixed since: Mac captures now list SwiftUI accessibility elements, read through `AXUIElement` on the app's own pid.
 
 ## Order
 

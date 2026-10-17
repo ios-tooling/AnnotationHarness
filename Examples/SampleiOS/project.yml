@@ -1,0 +1,52 @@
+name: SampleiOS
+options:
+  bundleIdPrefix: com.standalone
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+configFiles:
+  Debug: Version.xcconfig
+  Release: Version.xcconfig
+packages:
+  AnnotationHarness:
+    path: ../..
+targets:
+  SampleiOS:
+    type: application
+    platform: iOS
+    scheme: {}
+    sources:
+      - App
+    dependencies:
+      - package: AnnotationHarness
+        product: AnnotationHarness
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: SampleiOS
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        NSBonjourServices:
+          - _annotharness._tcp
+        NSLocalNetworkUsageDescription: Sends screenshots to AnnotationHarness Companion.
+        LSApplicationQueriesSchemes:
+          - annotationharness
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.standalone.SampleiOS
+        PRODUCT_NAME: SampleiOS
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "6.0"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
+        GENERATE_INFOPLIST_FILE: NO
