@@ -8,7 +8,6 @@
 		let app: CompanionApp
 		let store: CompanionStore
 		@State private var annotating: Annotation?
-		@State private var confirmsNewSession = false
 
 		private var session: HarnessSession? { store.sessions[app.key] }
 
@@ -17,6 +16,7 @@
 				Section {
 					ForEach(app.waiting) { item in
 						Button { annotate(item) } label: { WaitingCaptureRow(item: item) }
+							.buttonStyle(.plain)
 					}
 					.onDelete { offsets in
 						offsets.map { app.waiting[$0] }.forEach(store.remove)
@@ -40,14 +40,8 @@
 			.toolbar {
 				ToolbarItemGroup(placement: .primaryAction) {
 					ReportShareButton(appName: app.source.name, session: session)
-					Button("New Session", systemImage: "plus.square.on.square") { confirmsNewSession = true }
+					NewSessionButton { store.startNewSession(for: app) }
 				}
-			}
-			.confirmationDialog("Start a new session?", isPresented: $confirmsNewSession, titleVisibility: .visible) {
-				Button("New Session") { store.startNewSession(for: app) }
-				Button("Cancel", role: .cancel) {}
-			} message: {
-				Text("This session's captures stay on disk but leave the list and the next report.")
 			}
 			.fullScreenCover(item: $annotating) { annotation in
 				AnnotationScreen(draft: annotation.draft, session: annotation.session) { store.remove(annotation.item) }
@@ -57,7 +51,7 @@
 		/// Opens the markup screen on a waiting capture; Save files it in the app's session and takes it out of the inbox, Discard leaves it waiting.
 		private func annotate(_ item: InboxItem) {
 			guard let data = try? Data(contentsOf: item.imageURL), let image = UIImage(data: data, scale: item.envelope.imageScale) else { return }
-			let draft = CaptureDraft(image: image, accessibility: item.envelope.accessibility, screenName: item.envelope.screenName, layout: item.envelope.layout)
+			let draft = CaptureDraft(image: image, accessibility: item.envelope.accessibility, screenName: item.envelope.screenName, layout: item.envelope.layout, date: item.envelope.date)
 			annotating = Annotation(item: item, draft: draft, session: store.session(for: item))
 		}
 	}

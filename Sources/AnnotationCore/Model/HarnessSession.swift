@@ -53,10 +53,11 @@ import Observation
 		return session
 	}
 
-	/// Saves a capture's images and adds it; `layout` records what it shows when that can differ from the session's.
-	package func add(original: Data, annotated: Data, note: String, screenName: String?, accessibility: [AccessibilityNode], layout: SessionManifest.Layout? = nil) throws {
+	/// Saves a capture's images and adds it; `layout` records what it shows when that can differ from the session's,
+	/// and `date` is when the screenshot was taken.
+	package func add(original: Data, annotated: Data, note: String, screenName: String?, accessibility: [AccessibilityNode], layout: SessionManifest.Layout? = nil, date: Date = .now) throws {
 		let number = (captures.map(\.number).max() ?? 0) + 1
-		let capture = Capture(number: number, date: .now, screenName: screenName, note: note, accessibility: accessibility, layout: layout)
+		let capture = Capture(number: number, date: date, screenName: screenName, note: note, accessibility: accessibility, layout: layout)
 		try FileManager.default.createDirectory(at: folder.appending(path: "captures"), withIntermediateDirectories: true)
 		try original.write(to: folder.appending(path: capture.originalPath))
 		try annotated.write(to: folder.appending(path: capture.annotatedPath))

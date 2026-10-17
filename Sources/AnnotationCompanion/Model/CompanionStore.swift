@@ -22,6 +22,8 @@ package struct CompanionApp: Identifiable, Equatable {
 	package internal(set) var advertisedName: String?
 	/// Why listening or filing the last capture failed, if it did.
 	package internal(set) var problem: String?
+	/// The capture that arrived most recently while the companion ran, so the interface can show its app.
+	package private(set) var latestArrival: InboxItem?
 
 	@ObservationIgnored let listener = CompanionListener()
 	@ObservationIgnored var listening: Task<Void, Never>?
@@ -47,6 +49,7 @@ package struct CompanionApp: Identifiable, Equatable {
 		let item = try inbox.add(envelope)
 		waiting.append(item)
 		waiting.sort { $0.envelope.date > $1.envelope.date }
+		latestArrival = item
 	}
 
 	/// Takes a capture out of the inbox: deleted, or saved into its app's session.

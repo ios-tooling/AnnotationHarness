@@ -7,7 +7,7 @@
 		@State private var store = CompanionStore()
 		@State private var selection: String?
 		@State private var explainsPastePermission = false
-		@AppStorage("explainedPastePermission") private var explainedPastePermission = false
+		@AppStorage("explainedPasteDenial") private var explainedPastePermission = false
 		@Environment(\.scenePhase) private var scenePhase
 
 		public init() {}
@@ -25,6 +25,9 @@
 			.onChange(of: store.apps.map(\.key), initial: true) { _, keys in
 				if selection.map(keys.contains) != true { selection = keys.first }
 			}
+			.onChange(of: store.latestArrival?.id) {
+				if let key = store.latestArrival?.appKey { selection = key }
+			}
 			.onChange(of: scenePhase, initial: true) { _, phase in
 				switch phase {
 				case .active: store.startListening()
@@ -33,14 +36,14 @@
 				}
 			}
 			.onOpenURL { url in
-				guard store.open(url), !explainedPastePermission else { return }
+				guard store.open(url) == .denied, !explainedPastePermission else { return }
 				explainedPastePermission = true
 				explainsPastePermission = true
 			}
 			.alert("Allow Pasting from Other Apps", isPresented: $explainsPastePermission) {
 				Button("OK") {}
 			} message: {
-				Text("Apps on this iPad send captures through the pasteboard. So iOS doesn't ask every time, open Settings › AnnotationHarness Companion › Paste from Other Apps and choose Allow.")
+				Text("Apps on this iPad send captures through the pasteboard, and that paste wasn't allowed. To receive captures without being asked, open Settings › AnnotationHarness Companion › Paste from Other Apps and choose Allow.")
 			}
 		}
 	}

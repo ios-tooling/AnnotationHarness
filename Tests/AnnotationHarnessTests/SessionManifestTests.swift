@@ -33,6 +33,7 @@ struct SessionManifestTests {
 		#expect(manifest.layout == .harness(deviceID: "iphone-se"))
 		#expect(manifest.device.id == "iphone-se")
 		#expect(manifest.captures.map(\.note) == ["Too tight"])
+		#expect(manifest.captures.first?.date == ISO8601DateFormatter().date(from: "2026-01-05T09:31:00Z"))
 		#expect(manifest.captures.first?.accessibility.first?.frame == CGRect(x: 16, y: 70, width: 120, height: 34))
 	}
 

@@ -16,6 +16,7 @@
 						.foregroundStyle(.secondary)
 				}
 			}
+			.frame(maxWidth: .infinity, alignment: .leading)
 			.contentShape(.rect)
 		}
 	}
@@ -39,10 +40,11 @@
 		}
 	}
 
-	/// A screenshot on disk, shrunk to a row's height.
+	/// A screenshot on disk, scaled to fit a square slot that grows with Dynamic Type,
+	/// so tall phone and wide Mac screenshots take the same room and the rows' titles line up.
 	struct CaptureThumbnail: View {
 		let url: URL?
-		@ScaledMetric private var height = 96
+		@ScaledMetric private var side = 96
 
 		var body: some View {
 			AsyncImage(url: url) { image in
@@ -50,7 +52,7 @@
 			} placeholder: {
 				Color.secondary.opacity(0.2)
 			}
-			.frame(height: height)
+			.frame(width: side, height: side)
 		}
 	}
 #endif

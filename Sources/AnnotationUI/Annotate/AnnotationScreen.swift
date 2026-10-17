@@ -63,7 +63,7 @@
 			}
 			do {
 				let name = screenName.trimmingCharacters(in: .whitespacesAndNewlines)
-				try session.add(original: original, annotated: marked, note: note, screenName: name.isEmpty ? nil : name, accessibility: draft.accessibility, layout: draft.layout)
+				try session.add(original: original, annotated: marked, note: note, screenName: name.isEmpty ? nil : name, accessibility: draft.accessibility, layout: draft.layout, date: draft.date)
 				onSave?()
 				dismiss()
 			} catch {

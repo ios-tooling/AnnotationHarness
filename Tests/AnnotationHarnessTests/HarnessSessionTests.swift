@@ -51,4 +51,24 @@ import Testing
 		let header = try Data(contentsOf: zip).prefix(2)
 		#expect(header == Data("PK".utf8))
 	}
+
+	@Test("A capture keeps when its screenshot was taken, not when it was saved, and the report's Original line shows that")
+	func keepsCaptureDate() throws {
+		let taken = Date(timeIntervalSince1970: 1_790_000_000)
+		let session = HarnessSession.start(in: root)
+		try session.add(original: Data(), annotated: Data(), note: "", screenName: nil, accessibility: [], date: taken)
+
+		let resumed = HarnessSession.resumeOrStart(in: root)
+		#expect(resumed.captures.first?.date == taken)
+		let report = try String(contentsOf: session.folder.appending(path: "report.md"), encoding: .utf8)
+		#expect(report.contains("Original: [captures/001-original.png](captures/001-original.png) · \(taken.formatted(.iso8601))"))
+	}
+
+	@Test("Without a date, a capture is dated when it's added, as the harness's captures are")
+	func defaultsToNow() throws {
+		let before = Date.now.addingTimeInterval(-1)
+		let session = HarnessSession.start(in: root)
+		try session.add(original: Data(), annotated: Data(), note: "", screenName: nil, accessibility: [])
+		#expect(try #require(session.captures.first).date >= before)
+	}
 }
