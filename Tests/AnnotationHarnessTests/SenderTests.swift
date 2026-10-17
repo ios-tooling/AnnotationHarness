@@ -5,6 +5,7 @@
 	@testable import AnnotationHarness
 	#if os(macOS)
 		import AppKit
+		import SwiftUI
 	#endif
 
 	struct SendTargetTests {
@@ -34,6 +35,7 @@
 			@Test("A Mac window's capture reaches a companion on this machine", .timeLimit(.minutes(1)))
 			func sendsWindow() async throws {
 				let (window, button) = Self.window()
+				defer { window.close() }
 				// A whole second, since the header's ISO 8601 dates drop fractions.
 				let envelope = try #require(WindowCapture.envelope(of: window, screenName: "Inbox", date: Date(timeIntervalSince1970: 1_790_000_000)))
 				#expect(envelope.layout == .macWindow(size: window.frame.size))
@@ -65,14 +67,23 @@
 				#expect(!arrived.png.isEmpty)
 			}
 
-			private static func window() -> (NSWindow, NSButton) {
-				_ = NSApplication.shared
-				let window = NSWindow(contentRect: CGRect(x: 100, y: 100, width: 320, height: 200), styleMask: [.titled, .closable], backing: .buffered, defer: false)
-				window.isReleasedWhenClosed = false
-				let button = NSButton(title: "Reply", target: nil, action: nil)
-				button.frame = CGRect(x: 20, y: 20, width: 100, height: 32)
-				window.contentView?.addSubview(button)
-				return (window, button)
+			@Test("A SwiftUI window's capture lists its buttons, text and text fields, but not the window's own buttons")
+			func listsSwiftUIElements() throws {
+				let window = Self.window(frame: CGRect(x: 460, y: 140, width: 360, height: 240), styleMask: [.titled, .closable, .miniaturizable, .resizable])
+				defer { window.close() }
+				window.contentView = NSHostingView(rootView: SwiftUISample())
+				// Labelled, so they'd be listed if they weren't left out as the window's own.
+				let windowButtons = [NSWindow.ButtonType.closeButton: "Close", .miniaturizeButton: "Minimize", .zoomButton: "Zoom"]
+				for (type, label) in windowButtons { window.standardWindowButton(type)?.setAccessibilityLabel(label) }
+				let nodes = try #require(WindowCapture.envelope(of: window, screenName: "Library")).accessibility
+				let add = try #require(nodes.first { $0.label == "Add Book" })
+				#expect(add.traits.first == "button")
+				// AppKit reads static text as its value.
+				let title = try #require(nodes.first { $0.value == "The Hobbit" })
+				#expect(title.traits.first == "text")
+				let search = try #require(nodes.first { $0.label == "Search books" })
+				#expect(search.traits.first == "textField")
+				#expect(!nodes.contains { windowButtons.values.contains($0.label ?? "") }, "\(nodes.map(\.line))")
 			}
 		}
 	#endif

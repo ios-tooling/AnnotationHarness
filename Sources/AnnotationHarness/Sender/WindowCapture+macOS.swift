@@ -10,9 +10,10 @@
 		/// A Mac app sends over the network only.
 		static let sameDeviceAvailable = false
 
-		/// The key window, or else the main window.
+		/// The key window, or else the main window. An app that isn't active (driven by a script, say) has neither,
+		/// so then its frontmost visible window that could be main.
 		static func envelope(screenName: String?) -> CaptureEnvelope? {
-			guard let window = NSApp.keyWindow ?? NSApp.mainWindow else { return nil }
+			guard let window = NSApp.keyWindow ?? NSApp.mainWindow ?? NSApp.orderedWindows.first(where: { $0.isVisible && $0.canBecomeMain }) else { return nil }
 			return envelope(of: window, screenName: screenName)
 		}
 
