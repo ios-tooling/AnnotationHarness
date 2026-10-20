@@ -14,7 +14,7 @@
 
 		public var body: some View {
 			NavigationSplitView {
-				SourceAppList(apps: store.apps, selection: $selection)
+				SourceAppList(apps: store.apps, store: store, selection: $selection)
 			} detail: {
 				if let app = store.apps.first(where: { $0.key == selection }) {
 					SourceAppScreen(app: app, store: store)

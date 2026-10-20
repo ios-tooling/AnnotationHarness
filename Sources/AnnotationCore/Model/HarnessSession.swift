@@ -40,6 +40,15 @@ import Observation
 		return nil
 	}
 
+	/// Every session in `root` that can be read.
+	package static func all(in root: URL) -> [HarnessSession] {
+		let folders = (try? FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)) ?? []
+		return folders.compactMap { folder in
+			guard let data = try? Data(contentsOf: folder.appending(path: "session.json")), let manifest = try? JSONDecoder.harness.decode(SessionManifest.self, from: data) else { return nil }
+			return HarnessSession(folder: folder, manifest: manifest)
+		}
+	}
+
 	/// Starts an empty session for this app, laid out as `deviceID` in the harness.
 	package static func start(in root: URL = sessionsFolder, deviceID: String = DeviceProfile.standard.id) -> HarnessSession {
 		start(in: root, source: SourceApp(bundle: .main), layout: .harness(deviceID: deviceID))

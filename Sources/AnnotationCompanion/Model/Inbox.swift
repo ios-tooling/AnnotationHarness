@@ -51,6 +51,11 @@ package struct Inbox: Sendable {
 		if Self.contents(of: appFolder).isEmpty { try? FileManager.default.removeItem(at: appFolder) }
 	}
 
+	/// Deletes every waiting capture from the app with this key, and its folder.
+	package func removeApp(_ appKey: String) {
+		try? FileManager.default.removeItem(at: root.appending(path: appKey, directoryHint: .isDirectory))
+	}
+
 	private static func item(in folder: URL) -> InboxItem? {
 		guard let data = try? Data(contentsOf: folder.appending(path: "envelope.json")), let envelope = try? decoder.decode(CaptureEnvelope.self, from: data) else { return nil }
 		return InboxItem(id: UUID(uuidString: folder.lastPathComponent) ?? UUID(), folder: folder, envelope: envelope)

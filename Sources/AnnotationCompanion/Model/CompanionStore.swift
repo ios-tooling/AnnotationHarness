@@ -59,6 +59,21 @@ package struct CompanionApp: Identifiable, Equatable {
 		waiting.removeAll { $0.id == item.id }
 	}
 
+	/// Deletes everything kept for the app: its waiting captures and every one of its sessions.
+	/// A capture that arrives from it later starts it afresh.
+	package func removeApp(_ app: CompanionApp) {
+		inbox.removeApp(app.key)
+		try? FileManager.default.removeItem(at: sessionsRoot.appending(path: app.key, directoryHint: .isDirectory))
+		waiting.removeAll { $0.appKey == app.key }
+		sessions[app.key] = nil
+		if latestArrival?.appKey == app.key { latestArrival = nil }
+	}
+
+	/// How many captures the app has saved, across all its sessions.
+	package func savedCaptureCount(for app: CompanionApp) -> Int {
+		HarnessSession.all(in: sessionsRoot.appending(path: app.key, directoryHint: .isDirectory)).reduce(0) { $0 + $1.captures.count }
+	}
+
 	/// The session `item` is saved into: its app's, started from the item's source and layout when the app has none yet.
 	package func session(for item: InboxItem) -> HarnessSession {
 		if let session = sessions[item.appKey] { return session }
