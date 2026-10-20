@@ -1,7 +1,7 @@
 import AnnotationCore
 import Foundation
 
-/// A capture waiting to be annotated, kept in `Inbox/<app>/<uuid>/` as `envelope.json` (the envelope's header) and `original.png`.
+/// A capture waiting to be annotated, kept in `Waiting/<app>/<uuid>/` as `envelope.json` (the envelope's header) and `original.png`.
 package struct InboxItem: Identifiable, Sendable, Equatable {
 	package let id: UUID
 	package let folder: URL

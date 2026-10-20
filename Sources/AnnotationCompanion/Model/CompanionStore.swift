@@ -30,7 +30,8 @@ package struct CompanionApp: Identifiable, Equatable {
 	@ObservationIgnored var receiving: [Task<Void, Never>] = []
 
 	package init(root: URL = .documentsDirectory) {
-		inbox = Inbox(root: root.appending(path: "Inbox", directoryHint: .isDirectory))
+		// Not `Inbox`: iOS keeps `Documents/Inbox` for files other apps hand over, and on a device the app can't write there.
+		inbox = Inbox(root: root.appending(path: "Waiting", directoryHint: .isDirectory))
 		sessionsRoot = root.appending(path: "Sessions", directoryHint: .isDirectory)
 		waiting = inbox.items()
 		sessions = Self.newestSessions(in: sessionsRoot)

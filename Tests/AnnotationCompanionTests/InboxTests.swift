@@ -22,6 +22,18 @@ import Testing
 		#expect(read.envelope.accessibility.map(\.label) == ["Reply"])
 	}
 
+	@Test("Captures are filed outside Documents/Inbox, which iOS reserves for files other apps hand over and won't let the app write")
+	func avoidsReservedInboxFolder() throws {
+		let reserved = root.appending(path: "Inbox", directoryHint: .isDirectory)
+		try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+		try FileManager.default.createDirectory(at: reserved, withIntermediateDirectories: false, attributes: [.posixPermissions: 0o555])
+		let store = CompanionStore(root: root)
+		try store.receive(.sample(from: .mail))
+
+		#expect(store.waiting.count == 1)
+		#expect(!store.inbox.root.path().hasPrefix(reserved.path()))
+	}
+
 	@Test("An app with no bundle ID is filed under its name")
 	func keyFallsBackToName() {
 		var source = SourceApp.mail

@@ -35,7 +35,7 @@ Changes in the core:
 ### 2. Companion app (after 1; can run alongside 3 and 4)
 
 - `Apps/Companion/`: an Xcode project with a thin app target, `Version.xcconfig`, `NSBonjourServices` and a local-network usage string. It depends on `AnnotationCompanion`.
-- **Receiver:** an `@Observable` model that runs the listener whenever the app is in the foreground and writes each envelope into an inbox on disk: `Documents/Inbox/<bundleID>/<uuid>/`.
+- **Receiver:** an `@Observable` model that runs the listener whenever the app is in the foreground and writes each envelope into an inbox on disk: `Documents/Waiting/<bundleID>/<uuid>/` (not `Documents/Inbox`, which iOS reserves for files other apps hand over and doesn't let the app write on a device).
 - **Screens:** a `NavigationSplitView` with source apps in the sidebar, each showing its waiting captures and saved captures. Tapping a waiting capture opens the shared `AnnotationScreen`, and saving moves it into that app's `HarnessSession` (`Documents/Sessions/<bundleID>/<session>/`). Each app has Share Report and New Session.
 - Done when: it builds for iPad and its model tests pass (inbox → session move, grouping). End-to-end checking happens in step 5.
 
