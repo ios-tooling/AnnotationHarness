@@ -46,7 +46,7 @@
 					.navigationBarTitleDisplayMode(.inline)
 					.toolbar {
 						ToolbarItem(placement: .cancellationAction) {
-							Button("Discard", role: .cancel) { dismiss() }
+							Button("Cancel", role: .cancel) { dismiss() }
 						}
 						ToolbarItem(placement: .confirmationAction) {
 							Button("Save", action: save)

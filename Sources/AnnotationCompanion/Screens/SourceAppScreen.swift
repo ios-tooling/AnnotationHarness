@@ -48,7 +48,7 @@
 			}
 		}
 
-		/// Opens the markup screen on a waiting capture; Save files it in the app's session and takes it out of the inbox, Discard leaves it waiting.
+		/// Opens the markup screen on a waiting capture; Save files it in the app's session and takes it out of the inbox, Cancel leaves it waiting.
 		private func annotate(_ item: InboxItem) {
 			guard let data = try? Data(contentsOf: item.imageURL), let image = UIImage(data: data, scale: item.envelope.imageScale) else { return }
 			let draft = CaptureDraft(image: image, accessibility: item.envelope.accessibility, screenName: item.envelope.screenName, layout: item.envelope.layout, date: item.envelope.date)
