@@ -2,9 +2,11 @@
 	import SwiftUI
 
 	/// Shows the sender's companion picker and status in the active window, and tells the sender which screen that window shows.
-	/// Every window with the modifier shares the one sender, so only the window that appears active shows them.
+	/// Every window with the modifier shares the one sender, so only the window that appears active shows the status, and the
+	/// picker shows in the window that claimed it.
 	struct AnnotationSenderModifier: ViewModifier {
 		@State private var screenName: String?
+		@State private var window = UUID()
 		@Environment(\.appearsActive) private var appearsActive
 		@Environment(\.openURL) private var openURL
 		private let sender = AnnotationSender.shared
@@ -15,7 +17,11 @@
 					MainActor.assumeIsolated { $screenName.wrappedValue = name }
 				}
 				.onChange(of: screenName, initial: true) { publishScreenName() }
-				.onChange(of: appearsActive) { publishScreenName() }
+				.onChange(of: appearsActive) {
+					publishScreenName()
+					sender.claimPick(for: window, isActive: appearsActive)
+				}
+				.onChange(of: sender.pick?.id, initial: true) { sender.claimPick(for: window, isActive: appearsActive) }
 				.onChange(of: sender.urlToOpen) { openPendingURL() }
 				.confirmationDialog("Send to which companion?", isPresented: picksCompanion, titleVisibility: .visible, presenting: sender.pick) { pick in
 					ForEach(pick.companions, id: \.self) { companion in
@@ -39,9 +45,9 @@
 
 		private var picksCompanion: Binding<Bool> {
 			Binding {
-				appearsActive && sender.pick != nil
+				sender.showsPick(in: window)
 			} set: { isPresented in
-				if !isPresented { sender.pick = nil }
+				if !isPresented { sender.dismissPick(in: window) }
 			}
 		}
 

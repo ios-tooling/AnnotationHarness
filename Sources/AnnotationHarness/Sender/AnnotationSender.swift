@@ -11,8 +11,11 @@
 
 		/// A capture already taken, waiting on the picker to say which companion gets it.
 		struct Pick {
+			let id = UUID()
 			let envelope: CaptureEnvelope
 			let companions: [CompanionBrowser.Companion]
+			/// The window showing the picker, once one has claimed it (see `AnnotationSender+Pick.swift`).
+			var window: UUID?
 		}
 
 		/// The screen named with `.annotationScreen(_:)` in the active window.
@@ -42,6 +45,7 @@
 		/// Sends a capture to the companion picked for it, and remembers that choice for the rest of the run.
 		func send(_ envelope: CaptureEnvelope, to companion: CompanionBrowser.Companion) {
 			remembered = companion.name
+			pick = nil
 			Task { await deliver(envelope, to: companion) }
 		}
 
